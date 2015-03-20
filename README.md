@@ -1,35 +1,28 @@
 ### Introduction
 
-This second programming assignment will require you to write an R
-function that is able to cache potentially time-consuming computations.
-For example, taking the mean of a numeric vector is typically a fast
-operation. However, for a very long vector, it may take too long to
-compute the mean, especially if it has to be computed repeatedly (e.g.
-in a loop). If the contents of a vector are not changing, it may make
-sense to cache the value of the mean so that when we need it again, it
-can be looked up in the cache rather than recomputed. In this
-Programming Assignment you will take advantage of the scoping rules of
-the R language and how they can be manipulated to preserve state inside
-of an R object.
+This second programming assignment contains an R function that is able
+to cache potentially time-consuming computations.
 
-### Example: Caching the Mean of a Vector
+Only if the contents of an invertable matrix is changed should its
+inverse be calculated and the result soored in the cache.  Oherwise,
+since its inverse has already been computed and stored, looking up the
+value in the cache and simply reporting the pre-computed result is much
+faster.
 
-In this example we introduce the `<<-` operator which can be used to
-assign a value to an object in an environment that is different from the
-current environment. Below are two functions that are used to create a
-special object that stores a numeric vector and caches its mean.
+We take advantage of the scoping rules of the R language to accomplish
+this efficiency enhancement and how objects can be manipulated to preserve
+state inside of an R object.
 
-The first function, `makeVector` creates a special "vector", which is
-really a list containing a function to
+The `<<-` operator can be used to assign a value to an object's parent
+frame.  If the free object is not yet existent, it is created in the
+parent frame.
 
-1.  set the value of the vector
-2.  get the value of the vector
-3.  set the value of the mean
-4.  get the value of the mean
+We also leverage that free objects (not bound or passed through arguement)
+are determined by successive examination of enclosing frames starting with
+the local frame, along the path to the original invocation frame.
 
-<!-- -->
-
-    makeVector <- function(x = numeric()) {
+    makeVector <- function(y = numeric()) {
+            x <- y
             m <- NULL
             set <- function(y) {
                     x <<- y
